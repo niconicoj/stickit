@@ -1,13 +1,16 @@
-import express, { Application } from 'express';
+import { Server } from '@overnightjs/core'
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import mongoose from 'mongoose';
+
+import RootController from './controllers';
+import getEnv from './lib/env';
 
 
-class App {
-  public app: Application;
+class App extends Server {
 
   constructor() {
-    this.app = express();
+    super();
     this.setConfig();
   }
 
@@ -20,7 +23,31 @@ class App {
 
     //Enables cors   
     this.app.use(cors());
+
+    // connect to mongo
+    this.mongoConnect();
+
+    // registering controllers
+    super.addControllers(RootController);
+  }
+
+  //start the server & listen on given port
+  public start(port: string) {
+    this.app.listen(port, () => {
+      console.log('Server listening on port: ' + port);
+    })
+  }
+
+  //Connecting to our MongoDB database
+  private mongoConnect() { 
+    getEnv();
+    mongoose.Promise = global.Promise;
+    console.log("mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/stickit");
+    mongoose.connect("mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/stickit", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }).then(() => (console.log("mongo connection ok")));
   }
 }
 
-export default new App().app;
+export default new App();
