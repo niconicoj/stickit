@@ -4,8 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 
 import RootController from './controllers';
-import getEnv from './lib/env';
-
+import { MONGO_DB, MONGO_HOST, MONGO_PORT, MONGO_USER, MONGO_PASSWORD } from './constants/contants';
 
 class App extends Server {
 
@@ -40,10 +39,9 @@ class App extends Server {
 
   //Connecting to our MongoDB database
   private mongoConnect() { 
-    getEnv();
     mongoose.Promise = global.Promise;
-    console.log("mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/stickit");
-    mongoose.connect("mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/stickit", {
+    console.log("mongodb://"+MONGO_USER+":"+MONGO_PASSWORD+"@"+MONGO_HOST+":"+MONGO_PORT+"/"+MONGO_DB);
+    mongoose.connect("mongodb://"+MONGO_USER+":"+MONGO_PASSWORD+"@"+MONGO_HOST+":"+MONGO_PORT+"/"+MONGO_DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     }).then(() => (console.log("mongo connection ok")));
