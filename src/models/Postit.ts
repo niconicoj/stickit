@@ -25,6 +25,10 @@ const PostitSchema = new mongoose.Schema({
       message: 'Parent folder not found.'
     },
   },
+  userId: {
+    type: String,
+    required: true
+  },
   name: {
     type: String,
     required: true
