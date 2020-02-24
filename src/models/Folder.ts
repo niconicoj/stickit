@@ -1,6 +1,6 @@
 import mongoose, { MongooseDocument } from "mongoose";
 
-const validateParent = (v?: String) => {
+const validateParent = (v?: mongoose.Types.ObjectId) => {
   return new Promise<boolean>((resolve) => {
     if(v){
       Folder.findById(v, (err: Error, doc: MongooseDocument) => {
@@ -18,9 +18,9 @@ const validateParent = (v?: String) => {
 
 const FolderSchema = new mongoose.Schema({
   parentId: {
-    type: String || undefined,
+    type: mongoose.Types.ObjectId || undefined,
     validate : {
-      validator: (v?: String) => validateParent(v),
+      validator: (v?: mongoose.Types.ObjectId) => validateParent(v),
       message: 'Parent folder not found.'
     },
   },

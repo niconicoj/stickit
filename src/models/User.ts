@@ -17,7 +17,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  token: String
+  token: String,
+  rootFolder: mongoose.Types.ObjectId
 });
 
 export const User = mongoose.model("user", UserSchema);

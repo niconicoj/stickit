@@ -5,21 +5,35 @@ import { Request, Response } from 'express';
 import { Logger } from '@overnightjs/logger';
 
 import { Folder } from '../models/Folder';
-import { MongooseDocument } from 'mongoose';
+import { MongooseDocument, Model, Types } from 'mongoose';
  
 @Controller('api/folder')
 export class FolderController {
 
-    @Get(':userId')
-    @Middleware(JwtManager.middleware)
+    @Get(':folderId')
     private getAll(req: ISecureRequest, res: Response) {
-        
-    }
-
-    @Get(':userId/:id')
-    @Middleware(JwtManager.middleware)
-    private get(req: ISecureRequest, res: Response) {
-        
+      Folder.aggregate()
+      .match( {_id: new Types.ObjectId(req.params.folderId)} )
+      .graphLookup(
+        {
+          from: 'folders', 
+          startWith: '_id', 
+          connectFromField: '_id', 
+          connectToField: 'parentId',
+          as: 'folders',
+          maxDepth: 0,
+        }
+      ).lookup(
+        {
+          from: 'postits',
+          localField: '_id',
+          foreignField: 'folderId',
+          as: 'postits'
+        }
+      )
+      .then((result) => {
+        res.status(OK).json(result);
+      });
     }
 
     @Post('')
